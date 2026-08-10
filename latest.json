@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "version": "0.1.26",
-  "url": "https://github.com/sunds-support-ryu/ug-kitting-downloads/releases/download/payload-v0.1.26/app-0.1.26.asar",
-  "sha256": "16efe81db7c9ed56cf225d7a8a743fdb2ba825c8dd4954381a5b045dc26315ff",
-  "size": 3780629,
+  "version": "0.1.27",
+  "url": "https://github.com/sunds-support-ryu/ug-kitting-downloads/releases/download/payload-v0.1.27/app-0.1.27.asar",
+  "sha256": "1c8d6e94b0f627f371cd0ff62385735adc6a8ac1b9747dea0ee910354c037deb",
+  "size": 3813223,
   "bridgeApiVersion": 1,
-  "publishedAt": "2026-08-03T07:37:47.437Z"
+  "publishedAt": "2026-08-10T03:53:58.406Z"
 }
