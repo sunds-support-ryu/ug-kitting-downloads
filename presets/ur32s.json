@@ -1,0 +1,6 @@
+{
+  "id": "ur32s", "label": "UR32S", "model": "UR32S",
+  "firmwareVersion": "32.", "firmwareMatch": "prefix",
+  "inspectionType": "firmware-only", "protocol": "https", "authMode": "session-header",
+  "defaultIp": "192.168.1.1", "username": "", "password": ""
+}

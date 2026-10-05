@@ -1,0 +1,6 @@
+{
+  "id": "ug56", "label": "UG56", "model": "UG56-915M",
+  "firmwareVersion": "56.0.2808.7.3", "firmwareMatch": "exact",
+  "inspectionType": "gateway", "protocol": "https", "authMode": "session-header",
+  "defaultIp": "192.168.23.150", "username": "", "password": ""
+}
