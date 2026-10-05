@@ -1,6 +1,2121 @@
 {
-  "id": "ug56", "label": "UG56", "model": "UG56-915M",
-  "firmwareVersion": "56.0.2808.7.3", "firmwareMatch": "exact",
-  "inspectionType": "gateway", "protocol": "https", "authMode": "session-header",
-  "defaultIp": "192.168.23.150", "username": "", "password": ""
+  "schemaVersion": 2,
+  "id": "ug56",
+  "label": "UG56",
+  "model": "UG56-915M",
+  "firmwareVersion": "56.0.2808.7.3",
+  "firmwareMatch": "exact",
+  "inspectionType": "gateway",
+  "protocol": "https",
+  "authMode": "session-header",
+  "defaultIp": "192.168.23.150",
+  "username": "",
+  "password": "",
+  "requests": {
+    "cgi": [
+      {
+        "key": "statusSummary",
+        "id": 4,
+        "core": "yruo_status",
+        "base": "summary"
+      },
+      {
+        "key": "general",
+        "id": 6,
+        "core": "yruo_loragw",
+        "base": "general_conf"
+      },
+      {
+        "key": "radios",
+        "id": 8,
+        "core": "yruo_loragw",
+        "base": "radios"
+      },
+      {
+        "key": "spectralScan",
+        "id": 9,
+        "core": "yruo_loragw",
+        "base": "radios_spectral_scan"
+      },
+      {
+        "key": "advanced",
+        "id": 11,
+        "core": "yruo_loragw",
+        "base": "advanced"
+      },
+      {
+        "key": "custom",
+        "id": 12,
+        "core": "yruo_loragw",
+        "base": "custom"
+      },
+      {
+        "key": "nsGeneral",
+        "id": 13,
+        "core": "yruo_loragw",
+        "base": "ns_general"
+      },
+      {
+        "key": "wan",
+        "id": 23,
+        "core": "yruo_wan",
+        "base": "yruo_wan"
+      },
+      {
+        "key": "wifi",
+        "id": 24,
+        "core": "yruo_wifi",
+        "base": "yruo_wifi"
+      },
+      {
+        "key": "systemGeneral",
+        "id": 14,
+        "core": "yruo_system",
+        "base": "general"
+      },
+      {
+        "key": "time",
+        "id": 27,
+        "core": "yruo_system",
+        "base": "time"
+      },
+      {
+        "key": "log",
+        "id": 35,
+        "core": "yruo_log",
+        "base": "log_settings"
+      }
+    ],
+    "api": [
+      {
+        "key": "applications",
+        "path": "/api/urapplications?limit=9999&offset=0&organizationID=1"
+      },
+      {
+        "key": "codecSetting",
+        "path": "/api/payloadcodecs-setting"
+      },
+      {
+        "key": "customCodecs",
+        "path": "/api/payloadcodecs?order=asc&offset=0&limit=10&type=custom"
+      },
+      {
+        "key": "profiles",
+        "path": "/api/urprofiles?limit=9999&offset=0&organizationID=1"
+      },
+      {
+        "key": "devices",
+        "path": "/api/urdevices?search=&order=asc&offset=0&limit=10&organizationID=1"
+      },
+      {
+        "key": "fuota",
+        "path": "/api/fuota/task?search=&order=asc&offset=0&limit=10"
+      },
+      {
+        "key": "multicast",
+        "path": "/api/multicast-groups?search=&order=asc&offset=0&limit=10&organizationID=1"
+      },
+      {
+        "key": "gateways",
+        "path": "/api/gateways?limit=9999&offset=0&organizationID=1"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "enabled": true,
+      "id": "device-login",
+      "group": "Status",
+      "label": "Web GUI ログイン",
+      "source": "login.cgi",
+      "expected": "成功",
+      "actual": {
+        "path": "login.cgi",
+        "map": {
+          "true": "成功"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "device-model",
+      "group": "Status",
+      "label": "Model",
+      "source": "cgi.statusSummary",
+      "actual": {
+        "path": "login.model"
+      },
+      "rule": {
+        "type": "equal"
+      },
+      "expectedFrom": "model"
+    },
+    {
+      "enabled": true,
+      "id": "device-firmware",
+      "group": "Status",
+      "label": "Firmware Version",
+      "source": "login.cgi",
+      "actual": {
+        "path": "login.firmwareVersion"
+      },
+      "rule": {
+        "type": "firmware"
+      },
+      "expectedFrom": "firmwareVersion"
+    },
+    {
+      "enabled": true,
+      "id": "pf-eui",
+      "group": "Packet Forwarder",
+      "label": "Gateway EUI",
+      "source": "cgi.general",
+      "expected": "ハードウェア MAC",
+      "actual": {
+        "path": "cgi.general.gateway_eui"
+      },
+      "rule": {
+        "type": "hex",
+        "length": 16
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-id",
+      "group": "Packet Forwarder",
+      "label": "Gateway ID",
+      "source": "cgi.general",
+      "expected": "Gateway EUI と同一",
+      "actual": {
+        "path": "cgi.general.gateway_id"
+      },
+      "rule": {
+        "type": "reference",
+        "value": {
+          "path": "cgi.general.gateway_eui"
+        }
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-sync",
+      "group": "Packet Forwarder",
+      "label": "Frequency-Sync",
+      "source": "cgi.general",
+      "expected": "無効",
+      "actual": {
+        "path": "cgi.general.servs.0.sync_freq_plan",
+        "transform": "boolean"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-retransmission",
+      "group": "Packet Forwarder",
+      "label": "Data Retransmission",
+      "source": "cgi.general",
+      "expected": "無効",
+      "actual": {
+        "path": "cgi.general.data_retransmission",
+        "transform": "boolean"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-destination",
+      "group": "Packet Forwarder",
+      "label": "Multi-Destination ID 0",
+      "source": "cgi.general",
+      "expected": "有効 / Embedded NS / localhost",
+      "actual": {
+        "template": "{0} / {1} / {2}",
+        "values": [
+          {
+            "path": "cgi.general.servs.0.serv_enabled",
+            "transform": "boolean"
+          },
+          {
+            "path": "cgi.general.servs.0.serv_type",
+            "map": {
+              "ursalink": "Embedded NS"
+            }
+          },
+          {
+            "path": "cgi.general.servs.0.serv_addr"
+          }
+        ],
+        "when": {
+          "path": "cgi.general.servs.0"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-supported-freq",
+      "group": "Packet Forwarder",
+      "label": "Supported Freq",
+      "source": "cgi.radios",
+      "expected": "AS923-1",
+      "actual": {
+        "path": "cgi.radios.region_freq",
+        "map": {
+          "4": "AS923-1"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-radio-0",
+      "group": "Packet Forwarder",
+      "label": "Radio 0 Center Frequency",
+      "source": "cgi.radios",
+      "expected": "923.1 MHz",
+      "actual": {
+        "template": "{0} MHz",
+        "values": [
+          {
+            "path": "cgi.radios.radio_0_freq"
+          }
+        ],
+        "when": {
+          "path": "cgi.radios.radio_0_freq"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-radio-1",
+      "group": "Packet Forwarder",
+      "label": "Radio 1 Center Frequency",
+      "source": "cgi.radios",
+      "expected": "922.3 MHz",
+      "actual": {
+        "template": "{0} MHz",
+        "values": [
+          {
+            "path": "cgi.radios.radio_1_freq"
+          }
+        ],
+        "when": {
+          "path": "cgi.radios.radio_1_freq"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-channel-0",
+      "group": "Packet Forwarder",
+      "label": "Multi-Channel 0",
+      "source": "cgi.radios",
+      "expected": "Radio 0 / 923.2 MHz / 有効",
+      "actual": {
+        "template": "Radio {0} / {1} MHz / {2}",
+        "values": [
+          {
+            "path": "cgi.radios.multi_radio_0"
+          },
+          {
+            "path": "cgi.radios.multi_freq_0"
+          },
+          {
+            "path": "cgi.radios.multi_enable_0",
+            "transform": "boolean"
+          }
+        ],
+        "when": {
+          "path": "cgi.radios"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-channel-1",
+      "group": "Packet Forwarder",
+      "label": "Multi-Channel 1",
+      "source": "cgi.radios",
+      "expected": "Radio 0 / 923.4 MHz / 有効",
+      "actual": {
+        "template": "Radio {0} / {1} MHz / {2}",
+        "values": [
+          {
+            "path": "cgi.radios.multi_radio_1"
+          },
+          {
+            "path": "cgi.radios.multi_freq_1"
+          },
+          {
+            "path": "cgi.radios.multi_enable_1",
+            "transform": "boolean"
+          }
+        ],
+        "when": {
+          "path": "cgi.radios"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-channel-2",
+      "group": "Packet Forwarder",
+      "label": "Multi-Channel 2",
+      "source": "cgi.radios",
+      "expected": "Radio 1 / 922.2 MHz / 有効",
+      "actual": {
+        "template": "Radio {0} / {1} MHz / {2}",
+        "values": [
+          {
+            "path": "cgi.radios.multi_radio_2"
+          },
+          {
+            "path": "cgi.radios.multi_freq_2"
+          },
+          {
+            "path": "cgi.radios.multi_enable_2",
+            "transform": "boolean"
+          }
+        ],
+        "when": {
+          "path": "cgi.radios"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-channel-3",
+      "group": "Packet Forwarder",
+      "label": "Multi-Channel 3",
+      "source": "cgi.radios",
+      "expected": "Radio 1 / 922.4 MHz / 有効",
+      "actual": {
+        "template": "Radio {0} / {1} MHz / {2}",
+        "values": [
+          {
+            "path": "cgi.radios.multi_radio_3"
+          },
+          {
+            "path": "cgi.radios.multi_freq_3"
+          },
+          {
+            "path": "cgi.radios.multi_enable_3",
+            "transform": "boolean"
+          }
+        ],
+        "when": {
+          "path": "cgi.radios"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-channel-4",
+      "group": "Packet Forwarder",
+      "label": "Multi-Channel 4",
+      "source": "cgi.radios",
+      "expected": "Radio 1 / 922.6 MHz / 有効",
+      "actual": {
+        "template": "Radio {0} / {1} MHz / {2}",
+        "values": [
+          {
+            "path": "cgi.radios.multi_radio_4"
+          },
+          {
+            "path": "cgi.radios.multi_freq_4"
+          },
+          {
+            "path": "cgi.radios.multi_enable_4",
+            "transform": "boolean"
+          }
+        ],
+        "when": {
+          "path": "cgi.radios"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-channel-5",
+      "group": "Packet Forwarder",
+      "label": "Multi-Channel 5",
+      "source": "cgi.radios",
+      "expected": "Radio 0 / 922.8 MHz / 有効",
+      "actual": {
+        "template": "Radio {0} / {1} MHz / {2}",
+        "values": [
+          {
+            "path": "cgi.radios.multi_radio_5"
+          },
+          {
+            "path": "cgi.radios.multi_freq_5"
+          },
+          {
+            "path": "cgi.radios.multi_enable_5",
+            "transform": "boolean"
+          }
+        ],
+        "when": {
+          "path": "cgi.radios"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-channel-6",
+      "group": "Packet Forwarder",
+      "label": "Multi-Channel 6",
+      "source": "cgi.radios",
+      "expected": "Radio 0 / 923.0 MHz / 有効",
+      "actual": {
+        "template": "Radio {0} / {1} MHz / {2}",
+        "values": [
+          {
+            "path": "cgi.radios.multi_radio_6"
+          },
+          {
+            "path": "cgi.radios.multi_freq_6"
+          },
+          {
+            "path": "cgi.radios.multi_enable_6",
+            "transform": "boolean"
+          }
+        ],
+        "when": {
+          "path": "cgi.radios"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-channel-7",
+      "group": "Packet Forwarder",
+      "label": "Multi-Channel 7",
+      "source": "cgi.radios",
+      "expected": "Radio 1 / 922.0 MHz / 有効",
+      "actual": {
+        "template": "Radio {0} / {1} MHz / {2}",
+        "values": [
+          {
+            "path": "cgi.radios.multi_radio_7"
+          },
+          {
+            "path": "cgi.radios.multi_freq_7"
+          },
+          {
+            "path": "cgi.radios.multi_enable_7",
+            "transform": "boolean"
+          }
+        ],
+        "when": {
+          "path": "cgi.radios"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-lora",
+      "group": "Packet Forwarder",
+      "label": "LoRa Channel",
+      "source": "cgi.radios",
+      "expected": "有効 / Radio 1 / 922.3 MHz / 125 kHz / SF7",
+      "actual": {
+        "template": "{0} / Radio {1} / {2} MHz / {3} kHz / SF{4}",
+        "values": [
+          {
+            "path": "cgi.radios.lora_enable",
+            "transform": "boolean"
+          },
+          {
+            "path": "cgi.radios.lora_radio"
+          },
+          {
+            "path": "cgi.radios.lora_freq"
+          },
+          {
+            "path": "cgi.radios.lora_bandwidth",
+            "map": {
+              "4": 125
+            }
+          },
+          {
+            "path": "cgi.radios.spread_factor",
+            "add": 7
+          }
+        ],
+        "when": {
+          "path": "cgi.radios"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-fsk",
+      "group": "Packet Forwarder",
+      "label": "FSK Channel",
+      "source": "cgi.radios",
+      "expected": "無効",
+      "actual": {
+        "path": "cgi.radios.fsk_enable",
+        "transform": "boolean"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-beacon",
+      "group": "Packet Forwarder",
+      "label": "Beacon Setting",
+      "source": "cgi.advanced",
+      "expected": "0 s / 923400000 Hz / SF9 / 1 ch / 200000 Hz / 125000 Hz / 13 dBm / 0 s",
+      "actual": {
+        "template": "{0} s / {1} Hz / SF{2} / {3} ch / {4} Hz / {5} Hz / {6} dBm / {7} s",
+        "values": [
+          {
+            "path": "cgi.advanced.beacon_period"
+          },
+          {
+            "path": "cgi.advanced.beacon_freq_hz"
+          },
+          {
+            "path": "cgi.advanced.beacon_datarate"
+          },
+          {
+            "path": "cgi.advanced.beacon_freq_nb"
+          },
+          {
+            "path": "cgi.advanced.beacon_freq_step"
+          },
+          {
+            "path": "cgi.advanced.beacon_bw_hz"
+          },
+          {
+            "path": "cgi.advanced.beacon_power"
+          },
+          {
+            "path": "cgi.advanced.gps_time_offset_second"
+          }
+        ],
+        "when": {
+          "path": "cgi.advanced"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-intervals",
+      "group": "Packet Forwarder",
+      "label": "Intervals Setting",
+      "source": "cgi.advanced",
+      "expected": "10 s / 30 s / 100 ms",
+      "actual": {
+        "template": "{0} s / {1} s / {2} ms",
+        "values": [
+          {
+            "path": "cgi.advanced.keepalive_interval"
+          },
+          {
+            "path": "cgi.advanced.stat_interval"
+          },
+          {
+            "path": "cgi.advanced.push_timeout_ms"
+          }
+        ],
+        "when": {
+          "path": "cgi.advanced"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-crc",
+      "group": "Packet Forwarder",
+      "label": "Forward CRC Setting",
+      "source": "cgi.advanced",
+      "expected": "Disabled: 無効 / Error: 無効 / Valid: 有効",
+      "actual": {
+        "template": "Disabled: {0} / Error: {1} / Valid: {2}",
+        "values": [
+          {
+            "path": "cgi.advanced.forward_crc_disabled",
+            "transform": "boolean"
+          },
+          {
+            "path": "cgi.advanced.forward_crc_error",
+            "transform": "boolean"
+          },
+          {
+            "path": "cgi.advanced.forward_crc_valid",
+            "transform": "boolean"
+          }
+        ],
+        "when": {
+          "path": "cgi.advanced"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "pf-custom",
+      "group": "Packet Forwarder",
+      "label": "Custom Configuration",
+      "source": "cgi.custom",
+      "expected": "無効",
+      "actual": {
+        "path": "cgi.custom.custom_enable",
+        "transform": "boolean"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-enable",
+      "group": "Network Server",
+      "label": "Network Server",
+      "source": "cgi.nsGeneral",
+      "expected": "有効",
+      "actual": {
+        "path": "cgiResponse.nsGeneral.result.0.enable",
+        "transform": "boolean"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-platform",
+      "group": "Network Server",
+      "label": "Platform Mode",
+      "source": "cgi.nsGeneral",
+      "expected": "無効",
+      "actual": {
+        "path": "cgi.nsGeneral.ursalink_cloud",
+        "transform": "boolean"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-netid",
+      "group": "Network Server",
+      "label": "NetID",
+      "source": "cgi.nsGeneral",
+      "expected": "010203",
+      "actual": {
+        "path": "cgi.nsGeneral.net_id"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-delay",
+      "group": "Network Server",
+      "label": "Join Delay / RX1 Delay",
+      "source": "cgi.nsGeneral",
+      "expected": "5 s / 1 s",
+      "actual": {
+        "template": "{0} s / {1} s",
+        "values": [
+          {
+            "path": "cgi.nsGeneral.join_delay"
+          },
+          {
+            "path": "cgi.nsGeneral.rx1_delay"
+          }
+        ],
+        "when": {
+          "path": "cgi.nsGeneral"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-lease",
+      "group": "Network Server",
+      "label": "Lease Time",
+      "source": "cgi.nsGeneral",
+      "expected": "8760-0-0",
+      "actual": {
+        "path": "cgi.nsGeneral.lease_time"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-log",
+      "group": "Network Server",
+      "label": "Log Level",
+      "source": "cgi.nsGeneral",
+      "expected": "Debug",
+      "actual": {
+        "path": "cgi.nsGeneral.log_level",
+        "map": {
+          "5": "Debug"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-plan",
+      "group": "Network Server",
+      "label": "Channel Plan",
+      "source": "cgi.nsGeneral",
+      "expected": "AS923-1",
+      "actual": {
+        "path": "cgi.nsGeneral.channel_plan",
+        "map": {
+          "4": "AS923-1"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-app-name",
+      "group": "Network Server",
+      "label": "Application Name",
+      "source": "api.applications",
+      "expected": "EM320-TH",
+      "actual": {
+        "path": "api.applications.data.result",
+        "find": {
+          "field": "name",
+          "value": "EM320-TH"
+        },
+        "field": "name"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-app-description",
+      "group": "Network Server",
+      "label": "Application Description",
+      "source": "api.applications",
+      "expected": "EM320-TH",
+      "actual": {
+        "path": "api.applications.data.result",
+        "find": {
+          "field": "name",
+          "value": "EM320-TH"
+        },
+        "field": "description"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-app-metadata",
+      "group": "Network Server",
+      "label": "Application Metadata",
+      "source": "api.applications",
+      "expected": "有効 / devEUI, deviceName, applicationID",
+      "actual": {
+        "template": "{0} / {1}",
+        "values": [
+          {
+            "path": "api.applications.data.result",
+            "find": {
+              "field": "name",
+              "value": "EM320-TH"
+            },
+            "field": "metadata",
+            "transform": "boolean"
+          },
+          {
+            "path": "api.applications.data.result",
+            "find": {
+              "field": "name",
+              "value": "EM320-TH"
+            },
+            "field": "metadataDetails",
+            "join": ", ",
+            "fallback": []
+          }
+        ],
+        "when": {
+          "path": "api.applications.data.result",
+          "find": {
+            "field": "name",
+            "value": "EM320-TH"
+          },
+          "field": "name"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-codec-version",
+      "group": "Network Server",
+      "label": "Payload Codec Library",
+      "source": "api.codecSetting",
+      "expected": "1.5.4",
+      "actual": {
+        "path": "api.codecSetting.data.version"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-custom-codec",
+      "group": "Network Server",
+      "label": "Custom Payload Codec",
+      "source": "api.customCodecs",
+      "expected": "なし",
+      "actual": {
+        "path": "api.customCodecs.data.totalCount",
+        "map": {
+          "0": "なし"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-profile-ClassA-ABP",
+      "group": "Network Server",
+      "label": "Profile: ClassA-ABP",
+      "source": "api.profiles",
+      "expected": "TX 0 / ABP / Class A",
+      "actual": {
+        "template": "TX {0} / {1} / {2}",
+        "when": {
+          "path": "api.profiles.data.result",
+          "find": {
+            "field": "name",
+            "value": "ClassA-ABP"
+          },
+          "field": "profile"
+        },
+        "values": [
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassA-ABP"
+            },
+            "field": "profile.maxEIRP"
+          },
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassA-ABP"
+            },
+            "field": "profile.supportsJoin",
+            "map": {
+              "true": "OTAA",
+              "false": "ABP"
+            }
+          },
+          {
+            "classes": [
+              {
+                "label": "Class A",
+                "when": {
+                  "literal": true
+                }
+              },
+              {
+                "label": "Class B",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassA-ABP"
+                  },
+                  "field": "profile.supportsClassB"
+                }
+              },
+              {
+                "label": "Class C",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassA-ABP"
+                  },
+                  "field": "profile.supportsClassC"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-profile-ClassA-OTAA",
+      "group": "Network Server",
+      "label": "Profile: ClassA-OTAA",
+      "source": "api.profiles",
+      "expected": "TX 0 / OTAA / Class A",
+      "actual": {
+        "template": "TX {0} / {1} / {2}",
+        "when": {
+          "path": "api.profiles.data.result",
+          "find": {
+            "field": "name",
+            "value": "ClassA-OTAA"
+          },
+          "field": "profile"
+        },
+        "values": [
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassA-OTAA"
+            },
+            "field": "profile.maxEIRP"
+          },
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassA-OTAA"
+            },
+            "field": "profile.supportsJoin",
+            "map": {
+              "true": "OTAA",
+              "false": "ABP"
+            }
+          },
+          {
+            "classes": [
+              {
+                "label": "Class A",
+                "when": {
+                  "literal": true
+                }
+              },
+              {
+                "label": "Class B",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassA-OTAA"
+                  },
+                  "field": "profile.supportsClassB"
+                }
+              },
+              {
+                "label": "Class C",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassA-OTAA"
+                  },
+                  "field": "profile.supportsClassC"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-profile-ClassB-ABP",
+      "group": "Network Server",
+      "label": "Profile: ClassB-ABP",
+      "source": "api.profiles",
+      "expected": "TX 0 / ABP / Class A Class B",
+      "actual": {
+        "template": "TX {0} / {1} / {2}",
+        "when": {
+          "path": "api.profiles.data.result",
+          "find": {
+            "field": "name",
+            "value": "ClassB-ABP"
+          },
+          "field": "profile"
+        },
+        "values": [
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassB-ABP"
+            },
+            "field": "profile.maxEIRP"
+          },
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassB-ABP"
+            },
+            "field": "profile.supportsJoin",
+            "map": {
+              "true": "OTAA",
+              "false": "ABP"
+            }
+          },
+          {
+            "classes": [
+              {
+                "label": "Class A",
+                "when": {
+                  "literal": true
+                }
+              },
+              {
+                "label": "Class B",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassB-ABP"
+                  },
+                  "field": "profile.supportsClassB"
+                }
+              },
+              {
+                "label": "Class C",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassB-ABP"
+                  },
+                  "field": "profile.supportsClassC"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-profile-ClassB-OTAA",
+      "group": "Network Server",
+      "label": "Profile: ClassB-OTAA",
+      "source": "api.profiles",
+      "expected": "TX 0 / OTAA / Class A Class B",
+      "actual": {
+        "template": "TX {0} / {1} / {2}",
+        "when": {
+          "path": "api.profiles.data.result",
+          "find": {
+            "field": "name",
+            "value": "ClassB-OTAA"
+          },
+          "field": "profile"
+        },
+        "values": [
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassB-OTAA"
+            },
+            "field": "profile.maxEIRP"
+          },
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassB-OTAA"
+            },
+            "field": "profile.supportsJoin",
+            "map": {
+              "true": "OTAA",
+              "false": "ABP"
+            }
+          },
+          {
+            "classes": [
+              {
+                "label": "Class A",
+                "when": {
+                  "literal": true
+                }
+              },
+              {
+                "label": "Class B",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassB-OTAA"
+                  },
+                  "field": "profile.supportsClassB"
+                }
+              },
+              {
+                "label": "Class C",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassB-OTAA"
+                  },
+                  "field": "profile.supportsClassC"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-profile-ClassC-ABP",
+      "group": "Network Server",
+      "label": "Profile: ClassC-ABP",
+      "source": "api.profiles",
+      "expected": "TX 0 / ABP / Class A Class C",
+      "actual": {
+        "template": "TX {0} / {1} / {2}",
+        "when": {
+          "path": "api.profiles.data.result",
+          "find": {
+            "field": "name",
+            "value": "ClassC-ABP"
+          },
+          "field": "profile"
+        },
+        "values": [
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassC-ABP"
+            },
+            "field": "profile.maxEIRP"
+          },
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassC-ABP"
+            },
+            "field": "profile.supportsJoin",
+            "map": {
+              "true": "OTAA",
+              "false": "ABP"
+            }
+          },
+          {
+            "classes": [
+              {
+                "label": "Class A",
+                "when": {
+                  "literal": true
+                }
+              },
+              {
+                "label": "Class B",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassC-ABP"
+                  },
+                  "field": "profile.supportsClassB"
+                }
+              },
+              {
+                "label": "Class C",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassC-ABP"
+                  },
+                  "field": "profile.supportsClassC"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-profile-ClassC-OTAA",
+      "group": "Network Server",
+      "label": "Profile: ClassC-OTAA",
+      "source": "api.profiles",
+      "expected": "TX 0 / OTAA / Class A Class C",
+      "actual": {
+        "template": "TX {0} / {1} / {2}",
+        "when": {
+          "path": "api.profiles.data.result",
+          "find": {
+            "field": "name",
+            "value": "ClassC-OTAA"
+          },
+          "field": "profile"
+        },
+        "values": [
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassC-OTAA"
+            },
+            "field": "profile.maxEIRP"
+          },
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassC-OTAA"
+            },
+            "field": "profile.supportsJoin",
+            "map": {
+              "true": "OTAA",
+              "false": "ABP"
+            }
+          },
+          {
+            "classes": [
+              {
+                "label": "Class A",
+                "when": {
+                  "literal": true
+                }
+              },
+              {
+                "label": "Class B",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassC-OTAA"
+                  },
+                  "field": "profile.supportsClassB"
+                }
+              },
+              {
+                "label": "Class C",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassC-OTAA"
+                  },
+                  "field": "profile.supportsClassC"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-profile-ClassCB-ABP",
+      "group": "Network Server",
+      "label": "Profile: ClassCB-ABP",
+      "source": "api.profiles",
+      "expected": "TX 0 / ABP / Class A Class B Class C",
+      "actual": {
+        "template": "TX {0} / {1} / {2}",
+        "when": {
+          "path": "api.profiles.data.result",
+          "find": {
+            "field": "name",
+            "value": "ClassCB-ABP"
+          },
+          "field": "profile"
+        },
+        "values": [
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassCB-ABP"
+            },
+            "field": "profile.maxEIRP"
+          },
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassCB-ABP"
+            },
+            "field": "profile.supportsJoin",
+            "map": {
+              "true": "OTAA",
+              "false": "ABP"
+            }
+          },
+          {
+            "classes": [
+              {
+                "label": "Class A",
+                "when": {
+                  "literal": true
+                }
+              },
+              {
+                "label": "Class B",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassCB-ABP"
+                  },
+                  "field": "profile.supportsClassB"
+                }
+              },
+              {
+                "label": "Class C",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassCB-ABP"
+                  },
+                  "field": "profile.supportsClassC"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-profile-ClassCB-OTAA",
+      "group": "Network Server",
+      "label": "Profile: ClassCB-OTAA",
+      "source": "api.profiles",
+      "expected": "TX 0 / OTAA / Class A Class B Class C",
+      "actual": {
+        "template": "TX {0} / {1} / {2}",
+        "when": {
+          "path": "api.profiles.data.result",
+          "find": {
+            "field": "name",
+            "value": "ClassCB-OTAA"
+          },
+          "field": "profile"
+        },
+        "values": [
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassCB-OTAA"
+            },
+            "field": "profile.maxEIRP"
+          },
+          {
+            "path": "api.profiles.data.result",
+            "find": {
+              "field": "name",
+              "value": "ClassCB-OTAA"
+            },
+            "field": "profile.supportsJoin",
+            "map": {
+              "true": "OTAA",
+              "false": "ABP"
+            }
+          },
+          {
+            "classes": [
+              {
+                "label": "Class A",
+                "when": {
+                  "literal": true
+                }
+              },
+              {
+                "label": "Class B",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassCB-OTAA"
+                  },
+                  "field": "profile.supportsClassB"
+                }
+              },
+              {
+                "label": "Class C",
+                "when": {
+                  "path": "api.profiles.data.result",
+                  "find": {
+                    "field": "name",
+                    "value": "ClassCB-OTAA"
+                  },
+                  "field": "profile.supportsClassC"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-device-api",
+      "group": "Network Server",
+      "label": "Device API",
+      "source": "api.devices",
+      "expected": "HTTP 200",
+      "actual": {
+        "template": "HTTP {0}",
+        "values": [
+          {
+            "path": "api.devices.status"
+          }
+        ],
+        "when": {
+          "path": "api.devices.status"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-fuota-api",
+      "group": "Network Server",
+      "label": "FUOTA API",
+      "source": "api.fuota",
+      "expected": "HTTP 200",
+      "actual": {
+        "template": "HTTP {0}",
+        "values": [
+          {
+            "path": "api.fuota.status"
+          }
+        ],
+        "when": {
+          "path": "api.fuota.status"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-multicast-api",
+      "group": "Network Server",
+      "label": "Multicast Group API",
+      "source": "api.multicast",
+      "expected": "HTTP 200",
+      "actual": {
+        "template": "HTTP {0}",
+        "values": [
+          {
+            "path": "api.multicast.status"
+          }
+        ],
+        "when": {
+          "path": "api.multicast.status"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-gateway-id",
+      "group": "Network Server",
+      "label": "Gateway Fleet ID",
+      "source": [
+        "api.gateways",
+        "cgi.general"
+      ],
+      "expected": "Gateway EUI と同一",
+      "actual": {
+        "path": "api.gateways.data.result",
+        "find": {
+          "field": "name",
+          "value": "Local Gateway"
+        },
+        "field": "mac"
+      },
+      "rule": {
+        "type": "reference",
+        "value": {
+          "path": "cgi.general.gateway_eui"
+        }
+      }
+    },
+    {
+      "enabled": true,
+      "id": "ns-gateway-name",
+      "group": "Network Server",
+      "label": "Gateway Fleet Name",
+      "source": "api.gateways",
+      "expected": "Local Gateway",
+      "actual": {
+        "path": "api.gateways.data.result",
+        "find": {
+          "field": "name",
+          "value": "Local Gateway"
+        },
+        "field": "name"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "net-port",
+      "group": "Network",
+      "label": "Port",
+      "source": "cgi.wan",
+      "expected": "eth0",
+      "actual": {
+        "path": "cgi.wan.port",
+        "map": {
+          "eth 0": "eth0"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "net-type",
+      "group": "Network",
+      "label": "Connection Type",
+      "source": "cgi.wan",
+      "expected": "Static IP",
+      "actual": {
+        "path": "cgi.wan.protocol",
+        "map": {
+          "0": "Static IP"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "net-ip",
+      "group": "Network",
+      "label": "IP Address",
+      "source": "cgi.wan",
+      "expected": "192.168.23.150",
+      "actual": {
+        "path": "cgi.wan.static.ip_address"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "net-mask",
+      "group": "Network",
+      "label": "Netmask",
+      "source": "cgi.wan",
+      "expected": "255.255.255.0",
+      "actual": {
+        "path": "cgi.wan.static.netmask"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "net-gateway",
+      "group": "Network",
+      "label": "Gateway",
+      "source": "cgi.wan",
+      "expected": "192.168.23.1",
+      "actual": {
+        "path": "cgi.wan.static.gateway"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "net-mtu",
+      "group": "Network",
+      "label": "MTU",
+      "source": "cgi.wan",
+      "expected": 1500,
+      "actual": {
+        "path": "cgi.wan.mtu"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "net-dns",
+      "group": "Network",
+      "label": "DNS",
+      "source": "cgi.wan",
+      "expected": "8.8.8.8 / 223.5.5.5",
+      "actual": {
+        "template": "{0} / {1}",
+        "values": [
+          {
+            "path": "cgi.wan.pri_dns"
+          },
+          {
+            "path": "cgi.wan.sec_dns"
+          }
+        ],
+        "when": {
+          "path": "cgi.wan"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "net-nat",
+      "group": "Network",
+      "label": "NAT",
+      "source": "cgi.wan",
+      "expected": "有効",
+      "actual": {
+        "path": "cgi.wan.enable_nat",
+        "transform": "boolean"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "net-multi-ip",
+      "group": "Network",
+      "label": "Multiple IP Address",
+      "source": "cgi.wan",
+      "expected": "なし",
+      "actual": {
+        "path": "cgi.wan.static.multi_ip",
+        "emptyValue": "なし"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "net-wlan",
+      "group": "Network",
+      "label": "WLAN",
+      "source": "cgi.wifi",
+      "expected": "無効",
+      "actual": {
+        "path": "cgi.wifi.enabled",
+        "transform": "boolean"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "system-http",
+      "group": "System",
+      "label": "HTTP / 80",
+      "source": "cgi.systemGeneral",
+      "expected": "有効",
+      "actual": {
+        "template": "{0} / {1}",
+        "values": [
+          {
+            "path": "cgi.systemGeneral.http_enable",
+            "transform": "boolean"
+          },
+          {
+            "path": "cgi.systemGeneral.http_port"
+          }
+        ],
+        "when": {
+          "path": "cgi.systemGeneral"
+        }
+      },
+      "rule": {
+        "type": "all",
+        "conditions": [
+          {
+            "actual": {
+              "path": "cgi.systemGeneral.http_enable"
+            },
+            "type": "equal",
+            "value": 1
+          },
+          {
+            "actual": {
+              "path": "cgi.systemGeneral.http_port"
+            },
+            "type": "equal",
+            "value": 80
+          }
+        ]
+      }
+    },
+    {
+      "enabled": true,
+      "id": "system-https",
+      "group": "System",
+      "label": "HTTPS / 443",
+      "source": "cgi.systemGeneral",
+      "expected": "有効",
+      "actual": {
+        "template": "{0} / {1}",
+        "values": [
+          {
+            "path": "cgi.systemGeneral.https_enable",
+            "transform": "boolean"
+          },
+          {
+            "path": "cgi.systemGeneral.https_port"
+          }
+        ],
+        "when": {
+          "path": "cgi.systemGeneral"
+        }
+      },
+      "rule": {
+        "type": "all",
+        "conditions": [
+          {
+            "actual": {
+              "path": "cgi.systemGeneral.https_enable"
+            },
+            "type": "equal",
+            "value": 1
+          },
+          {
+            "actual": {
+              "path": "cgi.systemGeneral.https_port"
+            },
+            "type": "equal",
+            "value": 443
+          }
+        ]
+      }
+    },
+    {
+      "enabled": true,
+      "id": "system-telnet",
+      "group": "System",
+      "label": "TELNET / 23",
+      "source": "cgi.systemGeneral",
+      "expected": "無効",
+      "actual": {
+        "template": "{0} / {1}",
+        "values": [
+          {
+            "path": "cgi.systemGeneral.telnet_enable",
+            "transform": "boolean"
+          },
+          {
+            "path": "cgi.systemGeneral.telnet_port"
+          }
+        ],
+        "when": {
+          "path": "cgi.systemGeneral"
+        }
+      },
+      "rule": {
+        "type": "all",
+        "conditions": [
+          {
+            "actual": {
+              "path": "cgi.systemGeneral.telnet_enable"
+            },
+            "type": "equal",
+            "value": 0
+          },
+          {
+            "actual": {
+              "path": "cgi.systemGeneral.telnet_port"
+            },
+            "type": "equal",
+            "value": 23
+          }
+        ]
+      }
+    },
+    {
+      "enabled": true,
+      "id": "system-ssh",
+      "group": "System",
+      "label": "SSH / 22",
+      "source": "cgi.systemGeneral",
+      "expected": "無効",
+      "actual": {
+        "template": "{0} / {1}",
+        "values": [
+          {
+            "path": "cgi.systemGeneral.ssh_enable",
+            "transform": "boolean"
+          },
+          {
+            "path": "cgi.systemGeneral.ssh_port"
+          }
+        ],
+        "when": {
+          "path": "cgi.systemGeneral"
+        }
+      },
+      "rule": {
+        "type": "all",
+        "conditions": [
+          {
+            "actual": {
+              "path": "cgi.systemGeneral.ssh_enable"
+            },
+            "type": "equal",
+            "value": 0
+          },
+          {
+            "actual": {
+              "path": "cgi.systemGeneral.ssh_port"
+            },
+            "type": "equal",
+            "value": 22
+          }
+        ]
+      }
+    },
+    {
+      "enabled": true,
+      "id": "system-cert-files",
+      "group": "System",
+      "label": "HTTPS Certificate / Key",
+      "source": "cgi.systemGeneral",
+      "expected": ".crt / .key 内蔵",
+      "actual": {
+        "template": "{0} / {1}",
+        "values": [
+          {
+            "path": "cgi.systemGeneral.https_certificates"
+          },
+          {
+            "path": "cgi.systemGeneral.https_key"
+          }
+        ],
+        "when": {
+          "path": "cgi.systemGeneral"
+        }
+      },
+      "rule": {
+        "type": "all",
+        "conditions": [
+          {
+            "actual": {
+              "path": "cgi.systemGeneral.https_certificates"
+            },
+            "type": "suffix",
+            "value": ".crt"
+          },
+          {
+            "actual": {
+              "path": "cgi.systemGeneral.https_key"
+            },
+            "type": "suffix",
+            "value": ".key"
+          }
+        ]
+      }
+    },
+    {
+      "enabled": true,
+      "id": "system-cert-expiration",
+      "group": "System",
+      "label": "HTTPS Certificate Remaining Validity",
+      "source": "certificate.https",
+      "expected": "残存期間 3 年超",
+      "actual": {
+        "path": "certificate.validTo"
+      },
+      "rule": {
+        "type": "certificate",
+        "warningDays": 1096,
+        "alertDays": 366
+      }
+    },
+    {
+      "enabled": true,
+      "id": "system-timezone",
+      "group": "System",
+      "label": "Time Zone",
+      "source": "cgi.time",
+      "expected": "UTC+9 Asia/Tokyo",
+      "actual": {
+        "path": "cgi.time.timezone"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "system-ntp",
+      "group": "System",
+      "label": "NTP Server",
+      "source": "cgi.time",
+      "expected": "有効",
+      "actual": {
+        "path": "cgi.time.ntp_enable",
+        "transform": "boolean"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "system-ntp-address",
+      "group": "System",
+      "label": "NTP Address",
+      "source": "cgi.time",
+      "expected": "192.168.200.51",
+      "actual": {
+        "path": "cgi.time.ntp_address"
+      },
+      "rule": {
+        "type": "equal"
+      }
+    },
+    {
+      "enabled": true,
+      "id": "log-severity",
+      "group": "Maintenance",
+      "label": "Log Severity",
+      "source": "cgi.log",
+      "expected": "Debug",
+      "actual": {
+        "path": "cgi.log.loglevel",
+        "map": {
+          "8": "Debug"
+        }
+      },
+      "rule": {
+        "type": "equal"
+      }
+    }
+  ]
 }

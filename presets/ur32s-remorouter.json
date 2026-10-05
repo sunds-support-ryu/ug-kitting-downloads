@@ -1,6 +1,41 @@
 {
-  "id": "ur32s-remorouter", "label": "UR32Sリモルータ", "model": "UR32S",
-  "firmwareVersion": "34.3.0.4-r2", "firmwareMatch": "exact",
-  "inspectionType": "firmware-only", "protocol": "http", "authMode": "cookie",
-  "defaultIp": "192.168.1.1", "username": "", "password": ""
+  "schemaVersion": 2,
+  "id": "ur32s-remorouter",
+  "label": "UR32Sリモルータ",
+  "model": "UR32S",
+  "firmwareVersion": "34.3.0.4-r2",
+  "firmwareMatch": "exact",
+  "inspectionType": "firmware-only",
+  "protocol": "http",
+  "authMode": "cookie",
+  "defaultIp": "192.168.1.1",
+  "username": "",
+  "password": "",
+  "requests": {
+    "cgi": [
+      {
+        "key": "statusSummary",
+        "id": 2,
+        "core": "yruo_status",
+        "base": "summary"
+      }
+    ],
+    "api": []
+  },
+  "checks": [
+    {
+      "enabled": true,
+      "id": "device-firmware",
+      "group": "Status",
+      "label": "Firmware Version",
+      "source": "cgi.statusSummary",
+      "actual": {
+        "path": "login.firmwareVersion"
+      },
+      "rule": {
+        "type": "firmware"
+      },
+      "expectedFrom": "firmwareVersion"
+    }
+  ]
 }

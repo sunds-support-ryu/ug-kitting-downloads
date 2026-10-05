@@ -1,4 +1,9 @@
 {
   "schemaVersion": 1,
-  "files": ["ug65.json", "ug56.json", "ur32s.json", "ur32s-remorouter.json"]
+  "files": [
+    "ug65.json",
+    "ug56.json",
+    "ur32s.json",
+    "ur32s-remorouter.json"
+  ]
 }
